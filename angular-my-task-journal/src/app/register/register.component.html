@@ -1,0 +1,68 @@
+<div class="header">
+    <span class="header-text">My Task Journal</span>
+</div>
+<div class="main-content">
+    <div *ngIf="errorMessage" class="alert alert-danger mt-2">
+        {{ errorMessage }}
+    </div>
+</div>
+
+<!-- <div class="image-preview" style="margin-top: 2rem; margin-bottom: 2rem;">
+  <img [src]="user.picture" class="user-image" alt="User Image Preview">
+</div> -->
+
+<form #myForm="ngForm" (ngSubmit)="onSubmit()" class="container d-flex align-items-center min-vh-100">
+    <div class="row justify-content-center w-100">
+      <div class="col-6">
+        <div [class.error]="usernameEmpty" class="form-group">
+          <label for="username">Username<span class="required-field">*</span></label>
+          <input type="text" id="username" [(ngModel)]="user.username" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="firstName">First Name<span class="required-field">*</span></label>
+          <input type="text" id="firstName" [(ngModel)]="user.firstName" name="firstName" class="form-control" pattern="^[a-zA-Z]+$" required>
+        </div>
+        <div class="form-group">
+            <label for="middleName">Middle Name</label>
+            <input type="text" id="middleName" [(ngModel)]="user.middleName" name="middleName" class="form-control" pattern="^[a-zA-Z]+$">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name<span class="required-field">*</span></label>
+            <input type="text" id="lastName" [(ngModel)]="user.lastName" name="lastName" class="form-control" pattern="^[a-zA-Z]+$" required>
+        </div>
+        <div class="form-group">
+          <label for="age">Age<span class="required-field">*</span></label>
+          <input type="text" id="age" [(ngModel)]="user.age" name="age" class="form-control" [ngClass]="{'error': invalidAge}" required>
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">Phone number<span class="required-field">*</span></label>
+          <input type="text" id="phoneNumber" [(ngModel)]="user.phoneNumber" name="phoneNumber" pattern="^\d{10}$" class="form-control" [ngClass]="{'error': invalidPhoneNumber}" required>
+        </div>
+        <div [class.error]="emailTaken" class="form-group">
+          <label for="email">Email<span class="required-field">*</span></label>
+          <input type="email" id="email" [(ngModel)]="user.email" name="email" class="form-control" required>
+        </div>
+        <div [class.error]="passwordTooShort" class="form-group">
+          <label for="password">Password
+            <i class="fas fa-info-circle" tooltip="Password must be at least 8 characters long and contain a lowercase letter, an uppercase letter, a number, and a symbol."></i>
+          </label>
+          <input type="password" id="password" [(ngModel)]="user.password" name="password" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="courseName">Course Name<span class="required-field">*</span></label>
+            <select class="form-control" id="courseName" [(ngModel)]="user.courseName" name="courseName" required>
+              <option *ngFor="let course of courses" [value]="course">{{ course }}</option>
+            </select>
+        </div>
+        <!-- <div class="form-group">
+            <label for="picture">Picture URL</label>
+            <input type="text" id="picture" [(ngModel)]="user.picture" name="picture" class="form-control">
+        </div> -->
+        <div class="d-flex justify-content-between mt-3">
+          <button type="submit" class="btn btn-primary">Register</button>
+          <button type="button" (click)="goToLogin()" class="btn btn-secondary">Back</button>
+        </div>
+      </div>
+    </div>
+  </form>
+

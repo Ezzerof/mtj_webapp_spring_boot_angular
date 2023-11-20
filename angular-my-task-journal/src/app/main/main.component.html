@@ -1,0 +1,110 @@
+<div class="bg-light py-2">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div></div> 
+        <h1 class="mb-0">My Task Journal</h1>
+        <button (click)="logout()" class="btn btn-danger">Logout</button>
+    </div>
+</div>
+  
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="mb-3">
+            <button (click)="toggleNewTaskForm()" class="btn btn-success">New Task</button>
+        </div>
+
+        <div *ngIf="showNewTaskForm">
+            <h3>Add New Task</h3>
+            <div class="mb-3">
+                <input type="text" [(ngModel)]="newTask.taskName" placeholder="Task Name" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <textarea [(ngModel)]="newTask.description" placeholder="Task Description" class="form-control"></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="startDate">Start Date</label>
+                <input type="datetime-local" id="startDateTime" [(ngModel)]="newTask.startDateTime" [min]="today" required="" class="form-control" (change)="onStartDateChange()" />
+            </div>
+            <div class="form-group mb-3">
+                <label for="dueDate">Due Date</label>
+                <input type="datetime-local" id="dueDateTime" [(ngModel)]="newTask.dueDateTime" [min]="minDueDateTime" required="" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label for="status">Status</label>
+                <select [(ngModel)]="newTask.status" id="status" class="form-control">
+                    <option value="TO_DO">To Do</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="DONE">Done</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-between">
+
+                <button (click)="showNewTaskForm = false" class="btn btn-secondary">Cancel</button>
+            
+                <div class="flex-grow-1"></div>
+            
+                <button (click)="addTask()" class="btn btn-primary">Add Task</button>
+            </div>
+        </div>
+        
+        <div *ngIf="tasks.length > 0; else noTasksTemplate" class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Task Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">Due Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let task of tasks">
+                        <ng-container *ngIf="!isEditing || editedTask?.taskId !== task.taskId; else editTemplate">
+                            <td>{{ task.taskName }}</td>
+                            <td>{{ task.description }}</td>
+                            <td>{{ task.startDateTime | date: 'medium' }}</td>
+                            <td>{{ task.dueDateTime | date: 'medium' }}</td>
+                            <td>{{ displayStatus(task.status) }}</td>
+                            <td>
+                            <button (click)="editTask(task)" class="btn btn-warning btn-sm btn-spacing">Edit</button>
+                            <button *ngIf="task.taskId" (click)="deleteTask(task.taskId)" class="btn btn-danger btn-sm">Delete</button>
+                            </td>
+                        </ng-container>
+                        <ng-template #editTemplate>
+                            <ng-container *ngIf="editedTask">
+                              <td><input [(ngModel)]="editedTask.taskName" type="text" /></td>
+                              <td><textarea [(ngModel)]="editedTask.description"></textarea></td>
+                              <td><input [(ngModel)]="editedTask.startDateTime" type="datetime-local" /></td>
+                              <td><input [(ngModel)]="editedTask.dueDateTime" type="datetime-local" /></td>
+                              <td>
+                                <select [(ngModel)]="editedTask.status">
+                                  <option value="TO_DO">To Do</option>
+                                  <option value="IN_PROGRESS">In Progress</option>
+                                  <option value="DONE">Done</option>
+                                </select>
+                              </td>
+                              <td>
+                                <button (click)="saveTask()" class="btn btn-primary btn-sm">Save</button>
+                                <button (click)="cancelEdit()" class="btn btn-secondary btn-sm">Cancel</button>
+                              </td>
+                            </ng-container>
+                          </ng-template>
+                          
+                    </tr>                     
+                    
+                </tbody>
+            </table>
+        </div>
+    
+        <ng-template #noTasksTemplate>
+            <div class="alert alert-info mt-2 mb-4" role="alert">
+                No tasks to display. Click "New Task" to add one.
+            </div>
+        </ng-template>
+
+        <div *ngIf="isDateInvalid" class="alert alert-danger" role="alert">
+            Due date and time must be after the start date.
+          </div>
+    </div>
+</div>

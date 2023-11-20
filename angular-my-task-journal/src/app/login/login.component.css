@@ -1,0 +1,52 @@
+@media (max-width: 768px) {
+  .logo {
+      max-width: 150px;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+}
+
+.header {
+  background-color: #333; 
+  color: white; 
+  width: 100%;
+  height: 50px; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+}
+
+.welcome-text {
+  color: #333;
+  font-size: 1.5rem; 
+}
+
+
+.card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.header-text {
+  font-size: 24px;
+  justify-content: center;
+}
+
+.error-content {
+  margin-top: 50px;
+}
