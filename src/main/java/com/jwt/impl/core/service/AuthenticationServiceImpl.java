@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -52,9 +54,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setPhoneNumber(singUpRequest.phoneNumber());
             user.setPicture(singUpRequest.picture());
             user.setPassword(passwordEncoder.encode(singUpRequest.password()));
+            System.out.println(user.toString());
             userRepository.save(user);
         }
-
     }
 
     public User authenticate(SignInRequest input) {

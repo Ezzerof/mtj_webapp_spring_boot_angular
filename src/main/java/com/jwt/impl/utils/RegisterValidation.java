@@ -49,6 +49,8 @@ public class RegisterValidation {
     }
 
     private boolean isMiddleNameValid(String middleName) {
+        if (middleName == null || middleName.isEmpty())
+            return true;
         Pattern pattern = Pattern.compile("^[a-zA-Z ]+$");
         Matcher matcher = pattern.matcher(middleName);
 

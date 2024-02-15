@@ -4,7 +4,8 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from './auth-service-model';
 import { AuthenticationResponse } from '../login/authentication-response-model';
-
+import { MatDialog } from '@angular/material/dialog';
+import { SensitiveDataConsentDialogComponent } from '../sensitive-data-consent-dialog/sensitive-data-consent-dialog.component';
 
 
 @Component({
@@ -45,10 +46,24 @@ export class RegisterComponent {
   passwordTooShort = false;
   errorMessage: string | null = null;
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(private dialog: MatDialog, private http: HttpClient, private router: Router, private authService: AuthService) {}
 
   goToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  ngOnInit(): void {
+    this.openConsentDialog();
+  }
+
+  openConsentDialog(): void {
+    const dialogRef = this.dialog.open(SensitiveDataConsentDialogComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        this.goToLogin();
+      }
+    });
   }
 
   onSubmit() {

@@ -24,10 +24,15 @@ export class TaskService {
       return httpOptions;
     }
 
-    getTasks(): Observable<Task[]> {
+    getTasks(sortBy: string = 'taskName', direction: string = 'asc'): Observable<Task[]> {
       const options = this.getHttpOptions();
-      return this.http.get<Task[]>(this.apiEndpoint, options);
-    } 
+      let params = new HttpParams();
+      if (sortBy) {
+        params = params.append('sortBy', sortBy);
+        params = params.append('direction', direction);
+      }
+      return this.http.get<Task[]>(this.apiEndpoint, { ...options, params });
+    }
   
     addTask(task: Task): Observable<Task> {
       console.log('Create task called');

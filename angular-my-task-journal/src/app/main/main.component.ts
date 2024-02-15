@@ -28,6 +28,8 @@ export class MainComponent implements OnInit{
   editedTask: Task | null = null;
   originalTask: Task | null = null;
   isDateInvalid: boolean = false;
+  sortBy: string = 'taskName';
+  direction: string = 'asc';
 
 
   constructor(private authService: AuthService, private router: Router, private taskService: TaskService) { }
@@ -65,7 +67,7 @@ export class MainComponent implements OnInit{
   }
   
   loadTasks() {
-    this.taskService.getTasks().subscribe(
+    this.taskService.getTasks(this.sortBy, this.direction).subscribe(
       (tasks) => {
         this.tasks = tasks;
       },

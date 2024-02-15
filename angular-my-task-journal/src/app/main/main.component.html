@@ -8,8 +8,21 @@
   
 <div class="row justify-content-center mt-5">
     <div class="col-md-8">
-        <div class="mb-3">
-            <button (click)="toggleNewTaskForm()" class="btn btn-success">New Task</button>
+        <div class="col d-flex justify-content-end">
+            <div class="d-inline-flex">
+                <select [(ngModel)]="sortBy" (change)="loadTasks()" class="form-control form-control-sm me-2">
+                    <option value="" disabled selected><i class="fas fa-sort"></i> Sort By</option>
+                    <option value="taskName"><i class="fas fa-file-signature"></i> Task Name</option>
+                    <option value="startDateTime"><i class="fas fa-hourglass-start"></i> Start Date</option>
+                    <option value="dueDateTime"><i class="fas fa-hourglass-end"></i> Due Date</option>
+                    <option value="status"><i class="fas fa-tasks"></i> Status</option>
+                </select>
+                
+                <select [(ngModel)]="direction" (change)="loadTasks()" class="form-control form-control-sm">
+                    <option value="asc"><i class="fas fa-sort-amount-down-alt"></i> Ascending</option>
+                    <option value="desc"><i class="fas fa-sort-amount-up"></i> Descending</option>
+                </select>
+            </div>
         </div>
 
         <div *ngIf="showNewTaskForm">

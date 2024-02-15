@@ -23,3 +23,9 @@
 .btn-spacing {
   margin-right: 8px;
 }
+
+.sorting-dropdown {
+  width: auto;
+  max-width: 100%;
+}
+

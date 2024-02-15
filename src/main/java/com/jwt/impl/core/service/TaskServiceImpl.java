@@ -14,6 +14,7 @@ import com.jwt.impl.rest.payload.request.GetTaskDto;
 import com.jwt.impl.rest.payload.request.UpdateTaskDto;
 import com.jwt.impl.security.UserPrincipal;
 import com.jwt.impl.utils.TaskValidation;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,10 +39,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<GetTaskDto> getAllTasksFromUser() {
+    public List<GetTaskDto> getAllUserTasks() {
         UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userRepository.findById(userPrincipal.getId())
                 .map(user -> taskRepository.findAllTasksByAssignee(user)
+                        .stream()
+                        .map(this::convertToDto)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public List<GetTaskDto> getAllUserSortedTasks(String sortProperty, String sortDirection) {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortProperty);
+        return userRepository.findById(userPrincipal.getId())
+                .map(user -> taskRepository.findAllTasksByAssignee(user, sort)
                         .stream()
                         .map(this::convertToDto)
                         .collect(Collectors.toList()))
@@ -57,8 +70,8 @@ public class TaskServiceImpl implements TaskService {
             task.setTaskName(createTaskDto.taskName());
             task.setDescription(createTaskDto.description());
             task.setStatus(convertTaskStatus(createTaskDto.status()));
-            task.setStartDate(convertToLocalDate(createTaskDto.startDateTime()));
-            task.setDueDateAndTime(convertToLocalDate(createTaskDto.dueDateTime()));
+            task.setStartDateTime(convertToLocalDate(createTaskDto.startDateTime()));
+            task.setDueDateTime(convertToLocalDate(createTaskDto.dueDateTime()));
             UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = userRepository.findById(userPrincipal.getId())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -81,8 +94,8 @@ public class TaskServiceImpl implements TaskService {
         targetTask.setTaskName(updateTaskDto.taskName());
         targetTask.setDescription(updateTaskDto.description());
         targetTask.setStatus(updateTaskDto.status());
-        targetTask.setDueDateAndTime(convertToLocalDate(updateTaskDto.dueDateTime()));
-        targetTask.setStartDate(convertToLocalDate(updateTaskDto.startDateTime()));
+        targetTask.setDueDateTime(convertToLocalDate(updateTaskDto.dueDateTime()));
+        targetTask.setStartDateTime(convertToLocalDate(updateTaskDto.startDateTime()));
 
         taskRepository.save(targetTask);
     }
@@ -122,8 +135,8 @@ public class TaskServiceImpl implements TaskService {
 
     private GetTaskDto convertToDto(Task task) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        String formattedStartDateTime = task.getStartDate().format(formatter);
-        String formattedDueDateTime = task.getDueDateAndTime().format(formatter);
+        String formattedStartDateTime = (task.getStartDateTime() != null) ? task.getStartDateTime().format(formatter) : null;
+        String formattedDueDateTime = (task.getDueDateTime() != null) ? task.getDueDateTime().format(formatter): null;
 
         return new GetTaskDto(
                 task.getTaskId(),

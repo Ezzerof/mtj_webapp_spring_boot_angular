@@ -11,8 +11,8 @@ public class Task {
     private Integer taskId;
     private String taskName;
     private String description;
-    private LocalDateTime startDate;
-    private LocalDateTime dueDateAndTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime dueDateTime;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -60,19 +60,19 @@ public class Task {
         this.assignee = user;
     }
 
-    public LocalDateTime getDueDateAndTime() {
-        return dueDateAndTime;
+    public LocalDateTime getDueDateTime() {
+        return dueDateTime;
     }
 
-    public void setDueDateAndTime(LocalDateTime dueDate) {
-        this.dueDateAndTime = dueDate;
+    public void setDueDateTime(LocalDateTime dueDate) {
+        this.dueDateTime = dueDate;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
+    public void setStartDateTime(LocalDateTime startDate) {
+        this.startDateTime = startDate;
     }
 }
