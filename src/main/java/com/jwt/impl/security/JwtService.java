@@ -29,6 +29,22 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .signWith(getSignKey())
+                .compact();
+    }
+
+    public boolean validateRefreshToken(String token) {
+        Claims payload = claims(token);
+        Date expirationClaim = payload.getExpiration();
+        return !isTokenExpired(expirationClaim);
+    }
+
+
     private SecretKey getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);

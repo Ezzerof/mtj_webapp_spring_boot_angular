@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 
 @Injectable({
     providedIn: 'root',
@@ -23,14 +25,57 @@ export class AuthService {
         return httpOptions;
     }
 
-    login(username: string, password: string): Observable<any> {
-        return this.http.post<any>(
-          `${this.apiEndpoint}/sign-in`,
-          { username, password }
-        );
+    setRefreshToken(token: string | null): void {
+        if (token) {
+            localStorage.setItem('refreshToken', token);
+        } else {
+            localStorage.removeItem('refreshToken');
+        }
+    }
+      
+    getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+    }
+
+    refreshToken(): Observable<any> {
+        const refreshToken = this.getRefreshToken();
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+        return this.http.post<any>(`${this.apiEndpoint}/refresh-token`, { refreshToken }, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        });
       }
 
-      setToken(token: string | null): void {
+    changePassword(currentPassword: string, newPassword: string): Observable<any> {
+        const httpOptions = this.getHttpOptions();
+        const payload = { currentPassword, newPassword };
+        return this.http.post(`${this.apiEndpoint}/change-password`, payload, httpOptions);
+    }
+
+    deleteAccount(): Observable<any> {
+        const httpOptions = this.getHttpOptions();
+        return this.http.delete(`${this.apiEndpoint}/delete-account`, httpOptions)
+            .pipe(
+                map(response => {
+                    return response;
+                }),
+                catchError(error => {
+                    return throwError(() => new Error('Failed to delete the account'));
+                })
+            );
+    }
+      
+    login(username: string, password: string): Observable<any> {
+        return this.http.post<any>(`${this.apiEndpoint}/sign-in`, { username, password })
+            .pipe(map((response: any) => {
+            this.setToken(response.accessToken);
+            this.setRefreshToken(response.refreshToken);
+            return response;
+        }));
+    }
+
+    setToken(token: string | null): void {
         if (token) {
             localStorage.setItem('authToken', token);
         } else {
@@ -40,12 +85,12 @@ export class AuthService {
     }
     
     getToken(): string | null {
-        // If _authToken is null, try getting it from localStorage
         return this._authToken ?? localStorage.getItem('authToken');
     }
     
     clearToken(): void {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
         this._authToken = null;
     }
 

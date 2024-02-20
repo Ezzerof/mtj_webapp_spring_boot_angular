@@ -1,19 +1,23 @@
 .header {
-    background-color: #333; 
-    color: white; 
-    width: 100%;
-    height: 50px; 
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000; 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;;
-  }
+  background-color: #333; 
+  color: white; 
+  width: 100%;
+  height: 50px; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .header-text {
-    font-size: 24px; 
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 24px; 
+  left: 0;
 }
 
 .error-content {
@@ -28,4 +32,5 @@
   width: auto;
   max-width: 100%;
 }
+
 

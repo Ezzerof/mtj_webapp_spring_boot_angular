@@ -36,5 +36,17 @@ input.ng-invalid.ng-dirty {
   cursor: pointer;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: auto;
+  padding-top: 50px;
+}
+
+.logo {
+  margin-bottom: 0;
+}
 
 

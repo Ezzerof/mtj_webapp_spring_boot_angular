@@ -6,6 +6,7 @@ import { TaskService } from './task.service';
 import { Task } from './task.interface';
 import { formatDate } from '@angular/common';
 
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -51,6 +52,46 @@ export class MainComponent implements OnInit{
     this.authService.clearToken();
     this.router.navigate(['/login']);
   }
+
+  changePassword() {
+    const currentPassword = prompt('Please enter your current password: ');
+    if(!currentPassword) {
+      alert('Password chage cancelled.');
+      return;
+    }
+
+    const newPassword = prompt('Please enter your new password:');
+    if (!newPassword) {
+      alert('Password change cancelled.');
+      return;
+    }
+
+    this.authService.changePassword(currentPassword, newPassword).subscribe({
+      next: (response) => {
+        alert('Password successfully changed.');
+        this.logout();
+      },
+      error: (error) => {
+        console.error('There was an error changing the password', error);
+        alert('Failed to change password.');
+      }
+    });
+  }
+
+  deleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+        this.authService.deleteAccount().subscribe({
+            next: () => {
+                alert('Account successfully deleted.');
+                this.logout();
+            },
+            error: (error) => {
+                console.error('Error deleting account:', error);
+                alert('Failed to delete account.');
+            }
+        });
+    }
+}
 
   toggleNewTaskForm() {
     this.showNewTaskForm = !this.showNewTaskForm;

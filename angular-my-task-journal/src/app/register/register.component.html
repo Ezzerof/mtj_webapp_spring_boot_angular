@@ -7,9 +7,9 @@
     </div>
 </div>
 
-<!-- <div class="image-preview" style="margin-top: 2rem; margin-bottom: 2rem;">
-  <img [src]="user.picture" class="user-image" alt="User Image Preview">
-</div> -->
+<div class="d-flex justify-content-center my-4">
+  <img src="assets/NewLogo.png" alt="My Task Journal Logo" class="logo" style="max-width: 200px;"/>
+</div>
 
 <form #myForm="ngForm" (ngSubmit)="onSubmit()" class="container d-flex align-items-center min-vh-100">
     <div class="row justify-content-center w-100">
@@ -54,10 +54,6 @@
               <option *ngFor="let course of courses" [value]="course">{{ course }}</option>
             </select>
         </div>
-        <!-- <div class="form-group">
-            <label for="picture">Picture URL</label>
-            <input type="text" id="picture" [(ngModel)]="user.picture" name="picture" class="form-control">
-        </div> -->
         <div class="d-flex justify-content-between mt-3">
           <button type="submit" class="btn btn-primary">Register</button>
           <button type="button" (click)="goToLogin()" class="btn btn-secondary">Back</button>

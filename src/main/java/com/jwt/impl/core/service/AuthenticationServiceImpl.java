@@ -8,14 +8,14 @@ import com.jwt.impl.core.persistance.repository.UserRepository;
 import com.jwt.impl.rest.payload.request.SignInRequest;
 import com.jwt.impl.rest.payload.request.SignUpRequest;
 import com.jwt.impl.utils.RegisterValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -54,7 +54,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setPhoneNumber(singUpRequest.phoneNumber());
             user.setPicture(singUpRequest.picture());
             user.setPassword(passwordEncoder.encode(singUpRequest.password()));
-            System.out.println(user.toString());
             userRepository.save(user);
         }
     }
@@ -76,6 +75,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             );
         }
         return user;
+    }
+
+    @Override
+    public Boolean changePassword(String username, String currentPassword, String newPassword) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (!userOpt.isPresent())
+            return false;
+
+        User user = userOpt.get();
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            return false;
+        }
+
+        if (!registerValidation.isPasswordValid(newPassword)) {
+            return false;
+        }
+
+        String hashedNewPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedNewPassword);
+        userRepository.save(user);
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteAccount(Authentication authentication) {
+        String username = authentication.getName();
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            userRepository.delete(user.get());
+            return true;
+        }
+        return false;
     }
 
     private boolean isUsernameAvailable(String username) {
