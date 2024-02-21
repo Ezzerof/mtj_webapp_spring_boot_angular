@@ -12,7 +12,7 @@ import { AuthenticationResponse } from './authentication-response-model';
 })
 export class LoginComponent {
   errorMessage = '';
-  username: string = '';
+  email: string = '';
   password: string = '';
 
   constructor(private http:HttpClient, private router: Router, private authService: AuthService) { }
@@ -22,9 +22,10 @@ export class LoginComponent {
   }
 
   login() {
-    this.authService.login(this.username, this.password).subscribe( response => {
+    this.authService.login(this.email, this.password).subscribe( response => {
         console.log('Login successful', response);
         this.authService.setToken(response.token);
+        this.authService.setUserEmail(this.email);
         this.router.navigate(['/tasks']);
       },
       error => {

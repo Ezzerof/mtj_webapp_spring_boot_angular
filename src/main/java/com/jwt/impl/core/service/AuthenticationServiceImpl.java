@@ -2,15 +2,20 @@ package com.jwt.impl.core.service;
 
 
 import com.jwt.impl.core.exceptions.EmailAlreadyExistException;
+import com.jwt.impl.core.exceptions.UserNotFoundException;
 import com.jwt.impl.core.exceptions.UsernameAlreadyExistException;
 import com.jwt.impl.core.persistance.entity.User;
 import com.jwt.impl.core.persistance.repository.UserRepository;
+import com.jwt.impl.rest.payload.request.ChangePasswordRequest;
 import com.jwt.impl.rest.payload.request.SignInRequest;
 import com.jwt.impl.rest.payload.request.SignUpRequest;
+import com.jwt.impl.security.UserPrincipal;
 import com.jwt.impl.utils.RegisterValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,50 +57,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setAge(singUpRequest.age());
             user.setCourseName(singUpRequest.courseName());
             user.setPhoneNumber(singUpRequest.phoneNumber());
-            user.setPicture(singUpRequest.picture());
             user.setPassword(passwordEncoder.encode(singUpRequest.password()));
             userRepository.save(user);
         }
     }
 
     public User authenticate(SignInRequest input) {
-        User user;
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        input.email(),
+                        input.password()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        UserPrincipal principal = (UserPrincipal) authenticate.getPrincipal();
 
-        if (isUsernameAvailable(input.username()))
-            throw new UsernameAlreadyExistException("The username doesn't exists.");
+        Optional<User> user = userRepository.findByEmail(principal.getEmail());
 
-        user = userRepository.findByUsername(input.username()).get();
-
-        if (!registerValidation.isPasswordValid(input.password())) {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            input.username(),
-                            input.password()
-                    )
-            );
+        if (user.isPresent()) {
+            return user.get();
         }
-        return user;
+        throw new UserNotFoundException("User not found");
     }
 
     @Override
-    public Boolean changePassword(String username, String currentPassword, String newPassword) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
-        if (!userOpt.isPresent())
+    public Boolean changePassword(ChangePasswordRequest changePasswordRequest) {
+        Optional<User> userOpt = userRepository.findByEmail(changePasswordRequest.getEmail());
+        if (!userOpt.isPresent()) {
             return false;
+        }
 
         User user = userOpt.get();
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
             return false;
         }
 
-        if (!registerValidation.isPasswordValid(newPassword)) {
+        if (!registerValidation.isPasswordValid(changePasswordRequest.getNewPassword())) {
             return false;
         }
 
-        String hashedNewPassword = passwordEncoder.encode(newPassword);
+        String hashedNewPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
         user.setPassword(hashedNewPassword);
         userRepository.save(user);
 

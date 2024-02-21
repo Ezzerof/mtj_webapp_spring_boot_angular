@@ -20,14 +20,22 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       tap(evt => {
         if (evt instanceof HttpResponse) {
+          // Success response logging
           console.log('Response intercepted', evt);
         }
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Error intercepted', error);
-        if (error instanceof HttpErrorResponse && error.status === 401) {
+        if (error.status === 401) {
+          // Handle 401 errors (unauthorized)
           return this.handle401Error(request, next);
+        } else if (error.status === 200) {
+          // This block checks if somehow a 200 OK response is treated as an error, 
+          // which should not normally happen. This is just for debugging purposes.
+          console.warn('Received 200 OK as error', error);
+          return throwError(() => new Error('Received 200 OK as error'));
         } else {
+          // Handle other errors
           return throwError(() => error);
         }
       })

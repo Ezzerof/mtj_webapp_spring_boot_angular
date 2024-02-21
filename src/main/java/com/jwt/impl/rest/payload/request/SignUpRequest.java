@@ -8,7 +8,6 @@ public record SignUpRequest(
         Integer age,
         String email,
         String password,
-        String picture,
         String courseName,
         String phoneNumber
 

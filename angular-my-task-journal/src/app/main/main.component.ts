@@ -50,10 +50,21 @@ export class MainComponent implements OnInit{
 
   logout() {
     this.authService.clearToken();
+    this.authService.clearUserEmail();
     this.router.navigate(['/login']);
   }
 
+  getCurrentUserEmail(): string | null {
+    return this.authService.getUserEmail();
+  }
+
   changePassword() {
+    const email = this.getCurrentUserEmail();
+    if (!email) {
+        alert('User email is not available.');
+        return;
+    }
+
     const currentPassword = prompt('Please enter your current password: ');
     if(!currentPassword) {
       alert('Password chage cancelled.');
@@ -66,7 +77,7 @@ export class MainComponent implements OnInit{
       return;
     }
 
-    this.authService.changePassword(currentPassword, newPassword).subscribe({
+    this.authService.changePassword(currentPassword, newPassword, email).subscribe({
       next: (response) => {
         alert('Password successfully changed.');
         this.logout();
@@ -79,19 +90,18 @@ export class MainComponent implements OnInit{
   }
 
   deleteAccount() {
-    if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
-        this.authService.deleteAccount().subscribe({
-            next: () => {
-                alert('Account successfully deleted.');
-                this.logout();
-            },
-            error: (error) => {
-                console.error('Error deleting account:', error);
-                alert('Failed to delete account.');
-            }
-        });
-    }
-}
+    this.authService.deleteAccount().subscribe({
+      next: (response) => {
+        alert('Account successfully deleted.');
+        this.authService.clearToken(); 
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Error deleting account:', error);
+        alert('Failed to delete account.');
+      }
+    });
+  }
 
   toggleNewTaskForm() {
     this.showNewTaskForm = !this.showNewTaskForm;
@@ -176,10 +186,6 @@ export class MainComponent implements OnInit{
         }
       );
     }
-  }
-
-  updateTask(taskId: number | undefined) {
-
   }
 
   editTask(task: Task) {

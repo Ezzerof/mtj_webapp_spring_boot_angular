@@ -34,7 +34,7 @@ export class AuthService {
     }
       
     getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+        return localStorage.getItem('refreshToken');
     }
 
     refreshToken(): Observable<any> {
@@ -45,11 +45,24 @@ export class AuthService {
         return this.http.post<any>(`${this.apiEndpoint}/refresh-token`, { refreshToken }, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         });
-      }
+    }
 
-    changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    setUserEmail(email: string): void {
+        localStorage.setItem('userEmail', email);
+    }
+    
+    getUserEmail(): string | null {
+        return localStorage.getItem('userEmail');
+    }
+    
+    clearUserEmail(): void {
+        localStorage.removeItem('userEmail');
+    }
+
+
+    changePassword(currentPassword: string, newPassword: string, email: string): Observable<any> {
         const httpOptions = this.getHttpOptions();
-        const payload = { currentPassword, newPassword };
+        const payload = { currentPassword, newPassword, email };
         return this.http.post(`${this.apiEndpoint}/change-password`, payload, httpOptions);
     }
 
@@ -66,8 +79,8 @@ export class AuthService {
             );
     }
       
-    login(username: string, password: string): Observable<any> {
-        return this.http.post<any>(`${this.apiEndpoint}/sign-in`, { username, password })
+    login(email: string, password: string): Observable<any> {
+        return this.http.post<any>(`${this.apiEndpoint}/sign-in`, { email, password })
             .pipe(map((response: any) => {
             this.setToken(response.accessToken);
             this.setRefreshToken(response.refreshToken);

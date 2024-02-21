@@ -23,9 +23,16 @@ public class User {
     private String phoneNumber;
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
-
     public List<Task> getTasks() {
         return tasks;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public void setTasks(List<Task> tasks) {
@@ -102,14 +109,6 @@ public class User {
 
     public void setCourseName(String courseName) {
         this.courseName = courseName;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     public String getPhoneNumber() {

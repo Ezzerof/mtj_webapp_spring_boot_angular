@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 public class AuthController {
 
@@ -53,19 +55,13 @@ public class AuthController {
 
     @PostMapping("/api/v1/auth/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
-        boolean isPasswordChanged = authenticationService.changePassword(
-                username,
-                changePasswordRequest.getCurrentPassword(),
-                changePasswordRequest.getNewPassword()
-        );
+        boolean isPasswordChanged = authenticationService.changePassword(changePasswordRequest);
 
         if (isPasswordChanged) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.badRequest().body("Password could not be changed");
+            return ResponseEntity.badRequest().body(Map.of("error", "Password could not be changed"));
         }
     }
 
@@ -73,9 +69,9 @@ public class AuthController {
     public ResponseEntity<?> deleteAccount(Authentication authentication) {
         boolean isDeleted = authenticationService.deleteAccount(authentication);
         if (isDeleted) {
-            return ResponseEntity.ok().body("Account successfully deleted.");
+            return ResponseEntity.ok(Map.of("message", "Account successfully deleted."));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Account not found."));
         }
     }
 
