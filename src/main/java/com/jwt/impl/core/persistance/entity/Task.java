@@ -19,6 +19,19 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User assignee;
 
+    public Task(Integer taskId, String taskName, String description, LocalDateTime startDateTime, LocalDateTime dueDateTime, TaskStatus status, User assignee) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.description = description;
+        this.startDateTime = startDateTime;
+        this.dueDateTime = dueDateTime;
+        this.status = status;
+        this.assignee = assignee;
+    }
+
+    public Task() {
+    }
+
     public Integer getTaskId() {
         return taskId;
     }

@@ -1,6 +1,8 @@
 package com.jwt.impl.core.persistance.entity;
 
 import jakarta.persistence.*;
+import jdk.jfr.DataAmount;
+import org.mapstruct.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,25 @@ public class User {
     private String phoneNumber;
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
+
+    public User(Integer id, String username, String firstName, String middleName, String lastName, Integer age, String email, String password, String courseName, String picture, String phoneNumber, List<Task> tasks) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.age = age;
+        this.email = email;
+        this.password = password;
+        this.courseName = courseName;
+        this.picture = picture;
+        this.phoneNumber = phoneNumber;
+        this.tasks = tasks;
+    }
+
+    public User() {
+    }
+
     public List<Task> getTasks() {
         return tasks;
     }

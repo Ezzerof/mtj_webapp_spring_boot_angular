@@ -22,6 +22,12 @@ export class LoginComponent {
   }
 
   login() {
+
+    if (!this.email.trim() || !this.password.trim()) {
+      this.errorMessage = 'Incorrect Email or Password.';
+      return;
+    }
+  
     this.authService.login(this.email, this.password).subscribe( response => {
         console.log('Login successful', response);
         this.authService.setToken(response.token);
@@ -30,16 +36,8 @@ export class LoginComponent {
       },
       error => {
         console.log('Login failed', error);
-        if(error.error instanceof ErrorEvent) {
-          this.errorMessage = `Error: ${error.error.message}`;
-        } else {
-          if (error.error && error.error.message) {
-            this.errorMessage = `Error Code: ${error.status}\nMessage: ${error.error.message}`;
-          } else {
-            this.errorMessage = `Error Code: ${error.status}\nMessage: An unknown error occurred`;
-          }
-        }
-      }      
+          this.errorMessage = 'Incorrect Email or Password.';
+        }      
     )
   }
 

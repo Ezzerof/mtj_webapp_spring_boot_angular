@@ -1,10 +1,11 @@
-<!-- Header with the app title -->
 <div class="header text-center">
   <span class="header-text">My Task Journal</span>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+   </div>
 </div>
 
 <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
-
 
   <img src="assets/NewLogo.png" alt="My Task Journal Logo" class="mb-5 logo"/>
 
