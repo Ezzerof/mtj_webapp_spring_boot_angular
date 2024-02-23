@@ -21,13 +21,11 @@ public class User {
     private String email;
     private String password;
     private String courseName;
-    private String picture;
     private String phoneNumber;
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
-    public User(Integer id, String username, String firstName, String middleName, String lastName, Integer age, String email, String password, String courseName, String picture, String phoneNumber, List<Task> tasks) {
-        this.id = id;
+    public User(String username, String firstName, String middleName, String lastName, Integer age, String email, String password, String courseName, String picture, String phoneNumber, List<Task> tasks) {
         this.username = username;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -36,7 +34,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.courseName = courseName;
-        this.picture = picture;
         this.phoneNumber = phoneNumber;
         this.tasks = tasks;
     }
@@ -46,14 +43,6 @@ public class User {
 
     public List<Task> getTasks() {
         return tasks;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     public void setTasks(List<Task> tasks) {
