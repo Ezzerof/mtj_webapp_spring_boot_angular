@@ -25,7 +25,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/api/v1/auth/sing-up")
+    @PostMapping("/api/v1/auth/sign-up")
     public ResponseEntity<Void> singUp(@RequestBody SignUpRequest singUpRequest) {
         authenticationService.userSingUp(singUpRequest);
         return ResponseEntity.ok().build();
