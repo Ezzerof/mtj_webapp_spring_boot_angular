@@ -25,7 +25,7 @@ public class User {
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
-    public User(String username, String firstName, String middleName, String lastName, Integer age, String email, String password, String courseName, String picture, String phoneNumber, List<Task> tasks) {
+    public User(String username, String firstName, String middleName, String lastName, Integer age, String email, String password, String courseName, String phoneNumber) {
         this.username = username;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -35,7 +35,6 @@ public class User {
         this.password = password;
         this.courseName = courseName;
         this.phoneNumber = phoneNumber;
-        this.tasks = tasks;
     }
 
     public User() {
