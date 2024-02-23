@@ -113,7 +113,7 @@ export class RegisterComponent {
       return;
     }
   
-    this.http.post<AuthenticationResponse>('http://localhost:8080/api/v1/auth/sing-up', this.user)
+    this.http.post<AuthenticationResponse>('http://localhost:8080/api/v1/auth/sign-up', this.user)
   .subscribe(
       response => {
         console.log('User object before POST: ', this.user);
