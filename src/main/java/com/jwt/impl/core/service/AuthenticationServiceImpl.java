@@ -37,7 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void userSingUp(SignUpRequest singUpRequest) {
+    public void userSignUp(SignUpRequest singUpRequest) {
         User user = new User();
 
         if (!isUsernameAvailable(singUpRequest.username()))

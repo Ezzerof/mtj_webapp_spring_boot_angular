@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 
 public interface AuthenticationService {
 
-    void userSingUp(SignUpRequest signUpRequest);
+    void userSignUp(SignUpRequest signUpRequest);
 
     User authenticate(SignInRequest input);
 
