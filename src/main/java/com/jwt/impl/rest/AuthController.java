@@ -2,14 +2,16 @@ package com.jwt.impl.rest;
 
 import com.jwt.impl.core.persistance.entity.User;
 import com.jwt.impl.core.service.AuthenticationService;
+import com.jwt.impl.core.service.EmailService;
+import com.jwt.impl.core.service.TaskReminderService;
 import com.jwt.impl.rest.payload.request.*;
 import com.jwt.impl.rest.payload.response.SignInResponse;
 import com.jwt.impl.rest.payload.response.TokenRefreshResponse;
 import com.jwt.impl.security.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,10 +21,13 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
+    private final TaskReminderService taskReminderService;
 
-    public AuthController(AuthenticationService userService, JwtService jwtService) {
+    @Autowired
+    public AuthController(AuthenticationService userService, JwtService jwtService, TaskReminderService taskReminderService) {
         this.authenticationService = userService;
         this.jwtService = jwtService;
+        this.taskReminderService = taskReminderService;
     }
 
     @PostMapping("/api/v1/auth/sign-up")
@@ -36,6 +41,7 @@ public class AuthController {
         User authenticatedUser = authenticationService.authenticate(singInRequest);
         String jwtToken = jwtService.generateToken(authenticatedUser.getEmail());
         SignInResponse signInResponse = new SignInResponse(jwtToken);
+        taskReminderService.sendTaskReminderEmails();
         return ResponseEntity.ok(signInResponse);
     }
 
