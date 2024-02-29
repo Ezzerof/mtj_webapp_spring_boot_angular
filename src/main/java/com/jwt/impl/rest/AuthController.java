@@ -26,8 +26,8 @@ public class AuthController {
     }
 
     @PostMapping("/api/v1/auth/sign-up")
-    public ResponseEntity<Void> singUp(@RequestBody SignUpRequest singUpRequest) {
-        authenticationService.userSingUp(singUpRequest);
+    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest singUpRequest) {
+        authenticationService.userSignUp(singUpRequest);
         return ResponseEntity.ok().build();
     }
 
