@@ -13,7 +13,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SensitiveDataConsentDialogComponent } from './sensitive-data-consent-dialog/sensitive-data-consent-dialog.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './register/auth.interceptor';
+
 
 @NgModule({
   declarations: [
@@ -32,7 +32,7 @@ import { AuthInterceptor } from './register/auth.interceptor';
     MatDialogModule,
     BrowserAnimationsModule,
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -25,28 +25,6 @@ export class AuthService {
         return httpOptions;
     }
 
-    setRefreshToken(token: string | null): void {
-        if (token) {
-            localStorage.setItem('refreshToken', token);
-        } else {
-            localStorage.removeItem('refreshToken');
-        }
-    }
-      
-    getRefreshToken(): string | null {
-        return localStorage.getItem('refreshToken');
-    }
-
-    refreshToken(): Observable<any> {
-        const refreshToken = this.getRefreshToken();
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-        return this.http.post<any>(`${this.apiEndpoint}/refresh-token`, { refreshToken }, {
-          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        });
-    }
-
     setUserEmail(email: string): void {
         localStorage.setItem('userEmail', email);
     }
@@ -82,11 +60,11 @@ export class AuthService {
     login(email: string, password: string): Observable<any> {
         return this.http.post<any>(`${this.apiEndpoint}/sign-in`, { email, password })
             .pipe(map((response: any) => {
-            this.setToken(response.accessToken);
-            this.setRefreshToken(response.refreshToken);
-            return response;
-        }));
+                this.setToken(response.accessToken);
+                return response;
+            }));
     }
+    
 
     setToken(token: string | null): void {
         if (token) {
@@ -103,7 +81,6 @@ export class AuthService {
     
     clearToken(): void {
         localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
         this._authToken = null;
     }
 
