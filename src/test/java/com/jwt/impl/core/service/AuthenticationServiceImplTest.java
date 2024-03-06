@@ -1,12 +1,14 @@
 package com.jwt.impl.core.service;
 
 import com.jwt.impl.core.exceptions.EmailAlreadyExistException;
+import com.jwt.impl.core.exceptions.UserNotFoundException;
 import com.jwt.impl.core.exceptions.UsernameAlreadyExistException;
 import com.jwt.impl.core.persistance.entity.User;
 import com.jwt.impl.core.persistance.repository.UserRepository;
 import com.jwt.impl.rest.payload.request.SignInRequest;
 import com.jwt.impl.rest.payload.request.SignUpRequest;
 import com.jwt.impl.utils.RegisterValidation;
+import com.jwt.impl.security.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,12 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -148,6 +151,41 @@ public class AuthenticationServiceImplTest {
 
     @Test
     public void testAuthenticate() {
+        Authentication authentication = mock(Authentication.class);
+        UserPrincipal principal = new UserPrincipal(
+                userWithMidName.getId(),
+                userWithMidName.getUsername(),
+                userWithMidName.getEmail(),
+                userWithMidName.getPassword());
 
+        when(authentication.getPrincipal()).thenReturn(principal);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userWithMidName));
+
+        User authenticatedUser = service.authenticate(signInRequest);
+        String expectedAuthenticatedUserUsername = userWithMidName.getUsername();
+        String actualAuthUsername = authenticatedUser.getUsername();
+
+        verify(userRepository, times(1)).findByEmail(anyString());
+        assertNotNull(authenticatedUser);
+        assertEquals(expectedAuthenticatedUserUsername, actualAuthUsername);
+    }
+
+    @Test
+    public void testAuthenticate_invalidData() {
+        Authentication authentication = mock(Authentication.class);
+        UserPrincipal principal = new UserPrincipal(
+                userWithMidName.getId(),
+                userWithMidName.getUsername(),
+                userWithMidName.getEmail(),
+                userWithMidName.getPassword());
+
+        when(authentication.getPrincipal()).thenReturn(principal);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> service.authenticate(signInRequest));
+
+        verify(userRepository, times(1)).findByEmail(anyString());
     }
 }
