@@ -14,6 +14,4 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     void deleteByTaskId(Integer taskId);
 
-    Task findTaskByAssignee(User user);
-
 }

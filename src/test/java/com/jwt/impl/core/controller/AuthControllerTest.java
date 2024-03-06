@@ -73,7 +73,7 @@ public class AuthControllerTest {
 
     @Test
     public void AuthController_SignUp_ReturnUser() throws Exception {
-        doNothing().when(service).userSingUp(signUpRequest);
+        doNothing().when(service).userSignUp(signUpRequest);
 
         mockMvc.perform(post("/api/v1/auth/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)
