@@ -5,10 +5,11 @@ import com.jwt.impl.core.exceptions.UserNotFoundException;
 import com.jwt.impl.core.exceptions.UsernameAlreadyExistException;
 import com.jwt.impl.core.persistance.entity.User;
 import com.jwt.impl.core.persistance.repository.UserRepository;
+import com.jwt.impl.rest.payload.request.ChangePasswordRequest;
 import com.jwt.impl.rest.payload.request.SignInRequest;
 import com.jwt.impl.rest.payload.request.SignUpRequest;
-import com.jwt.impl.utils.RegisterValidation;
 import com.jwt.impl.security.UserPrincipal;
+import com.jwt.impl.utils.RegisterValidation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,6 +36,8 @@ public class AuthenticationServiceImplTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private RegisterValidation registerValidation;
+    @Mock
+    private Authentication authentication;
     @InjectMocks
     private AuthenticationServiceImpl service;
     private SignUpRequest signUpRequest;
@@ -43,6 +45,7 @@ public class AuthenticationServiceImplTest {
     private SignInRequest signInRequest;
     private User userWithMidName;
     private User userWithoutMidName;
+    private ChangePasswordRequest changePasswordRequest;
 
     @BeforeEach
     public void init() {
@@ -90,6 +93,11 @@ public class AuthenticationServiceImplTest {
                 "passworD123!",
                 "Course",
                 "1234567898"
+        );
+        changePasswordRequest = new ChangePasswordRequest(
+                userWithMidName.getPassword(),
+                "newPass123!",
+                userWithMidName.getEmail()
         );
     }
 
@@ -150,7 +158,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void testAuthenticate() {
+    public void testAuthenticate_WhenUserExists() {
         Authentication authentication = mock(Authentication.class);
         UserPrincipal principal = new UserPrincipal(
                 userWithMidName.getId(),
@@ -172,7 +180,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void testAuthenticate_invalidData() {
+    public void testAuthenticate_WhenUserDoesNotExist() {
         Authentication authentication = mock(Authentication.class);
         UserPrincipal principal = new UserPrincipal(
                 userWithMidName.getId(),
@@ -187,5 +195,54 @@ public class AuthenticationServiceImplTest {
         assertThrows(UserNotFoundException.class, () -> service.authenticate(signInRequest));
 
         verify(userRepository, times(1)).findByEmail(anyString());
+    }
+
+    @Test
+    public void testChangePassword_ValidPass_Boolean() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userWithMidName));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPass123!");
+        when(userRepository.save(any(User.class))).thenReturn(userWithMidName);
+
+        assertTrue(service.changePassword(changePasswordRequest));
+
+        verify(userRepository).findByEmail(anyString());
+        verify(passwordEncoder).matches(anyString(), anyString());
+        verify(passwordEncoder).encode(anyString());
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    public void testChangePassword_InvalidPass_Boolean() {
+        changePasswordRequest.setCurrentPassword("TestPass123!");
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userWithMidName));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertFalse(service.changePassword(changePasswordRequest));
+
+        verify(userRepository).findByEmail(anyString());
+        verify(passwordEncoder).matches(anyString(), anyString());
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void testDeleteAccount_ValidDetails_Boolean() {
+        when(authentication.getName()).thenReturn(userWithMidName.getUsername());
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(userWithMidName));
+        doNothing().when(userRepository).delete(any(User.class));
+
+        assertTrue(service.deleteAccount(authentication));
+
+        verify(userRepository, times(1)).delete(any(User.class));
+    }
+
+    @Test
+    public void testDeleteAccount_InvalidDetails_Boolean() {
+        when(authentication.getName()).thenReturn("nonExistingUser");
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
+        assertFalse(service.deleteAccount(authentication));
+        verify(userRepository, never()).delete(any(User.class));
     }
 }
