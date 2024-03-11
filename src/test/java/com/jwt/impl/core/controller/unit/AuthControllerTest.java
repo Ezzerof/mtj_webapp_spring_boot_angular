@@ -1,4 +1,4 @@
-package com.jwt.impl.core.controller;
+package com.jwt.impl.core.controller.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwt.impl.core.persistance.entity.User;

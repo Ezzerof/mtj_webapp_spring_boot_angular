@@ -1,10 +1,11 @@
-package com.jwt.impl.core.service;
+package com.jwt.impl.core.service.unit;
 
 import com.jwt.impl.core.exceptions.EmailAlreadyExistException;
 import com.jwt.impl.core.exceptions.UserNotFoundException;
 import com.jwt.impl.core.exceptions.UsernameAlreadyExistException;
 import com.jwt.impl.core.persistance.entity.User;
 import com.jwt.impl.core.persistance.repository.UserRepository;
+import com.jwt.impl.core.service.AuthenticationServiceImpl;
 import com.jwt.impl.rest.payload.request.ChangePasswordRequest;
 import com.jwt.impl.rest.payload.request.SignInRequest;
 import com.jwt.impl.rest.payload.request.SignUpRequest;
