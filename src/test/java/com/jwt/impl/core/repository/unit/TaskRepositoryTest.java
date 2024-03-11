@@ -1,4 +1,4 @@
-package com.jwt.impl.core.repository;
+package com.jwt.impl.core.repository.unit;
 
 import com.jwt.impl.core.persistance.entity.Task;
 import com.jwt.impl.core.persistance.entity.TaskStatus;

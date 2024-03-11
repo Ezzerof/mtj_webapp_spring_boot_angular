@@ -1,4 +1,4 @@
-package com.jwt.impl.core.repository;
+package com.jwt.impl.core.repository.unit;
 
 import com.jwt.impl.core.persistance.entity.User;
 import com.jwt.impl.core.persistance.repository.UserRepository;
